@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <title>Particle System</title>
+ <meta charset="utf-8">
+ <style>
+canvas {
+ border: 6px solid black;
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	}
+	#buttons
+	{position: absolute;
+		top: 373px;
+		left: 670px;
+	}
+	#buttons1
+	{position: absolute;
+		top: 500px;
+		left: 700px;
+	}
+	</style>
+ <script>
+ var canvas;
+ var context;
+ var particles;
+ var planets;
+ var timer;
+ var timer1;
+ var timer2;
+ var timer3;
+ 
+ function makeParticles() {
+	//create an array of particles for our animation
+	particles = [];
+	for(var i = 0; i < 5; i++)
+	{
+		particles.push(new Particle());
+		return particles;
+	}
+ }
+
+ function degreesToRadians(degrees) {
+	 //converts from degrees to radians and returns
+	 return (degrees * Math.PI)/180;
+ }
+
+ function Particle()
+ {
+	 //the constructor for a single particle, with random starting x+y, velocity, color, and radius
+	 this.x = Math.random()*canvas.width;
+	 this.y = Math.random()*canvas.height;
+	 this.vx = Math.random()*10-5;
+	 this.vy = Math.random()*10-5;
+	 var colors = ["orange", "yellow", "white"];
+	 this.color = colors[Math.floor(Math.random()*colors.length)];
+	 this.radius = .5;
+ }
+  /*function makePlanets() {
+	//create an array of planets for our animation
+	planets = [];
+	for(var i = 0; i < 5; i++)
+	{
+		planets.push(new Planet());
+		return planets;
+	}
+ }
+  function Planet()
+ {
+	 //the constructor for a single planet, with random starting x+y, velocity, color, and radius
+	 this.x = Math.random()*canvas.width;
+	 this.y = Math.random()*canvas.height;
+	 this.vx = Math.random()*10-5;
+	 this.vy = Math.random()*10-5;
+	 var colors = ["grey", "brown"];
+	 this.color = colors[Math.floor(Math.random()*colors.length)];
+	 this.radius = 5;
+ }
+*/
+//clears and starts animation
+ var startAnim = function() {
+ 	var pizza = 3.14;
+ clearInterval(timer1);
+ document.getElementById('clear').style.visibility = 'hidden';
+  timer = setInterval(moveParticles, .00001);
+ //timer2 = setInterval(noiseMaker, .00001);
+
+ }
+	//creates title page and starts with button click
+  function drawTitle(canvas, context) {
+	 canvas = document.getElementById('canvas');
+	 context = canvas.getContext('2d');
+	 function resizeCanvas() {
+		canvas = document.getElementById('canvas');
+		context = canvas.getContext('2d');
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;}
+	 resizeCanvas();
+	 timer1 = setInterval(drawTitle, 1000000);
+		//creates star shape
+		function drawStars(){
+		 context.moveTo(130,178);
+		 context.lineTo(142,190);
+		 context.lineTo(130,210);
+		 context.lineTo(150,200);
+		 context.lineTo(168,210);
+		 context.lineTo(155,190);
+		 context.lineTo(168,185);
+		 context.lineTo(153,180);
+		 context.lineTo(146,165);
+		 context.lineTo(138,178);
+		 context.fillStyle = "rgb(10, 10, 10)";
+		 context.closePath();
+		 context.fill();
+		 context.stroke();
+		 context.moveTo(190,188);
+		 context.lineTo(202,200);
+		 context.lineTo(190,220);
+		 context.lineTo(210,210);
+		 context.lineTo(228,220);
+		 context.lineTo(215,200);
+		 context.lineTo(228,195);
+		 context.lineTo(213,190);
+		 context.lineTo(206,175);
+		 context.lineTo(198,188);
+		 context.fillStyle = "rgb(10, 10, 10)";
+		 context.closePath();
+		 context.fill();
+		 context.stroke();
+			}
+			drawStars();
+	//actual title	
+	 context.fillStyle = "rgb(10, 10, 10)";
+	context.font = 'bold 50px helvetica';
+	context.fillText('Unlucky Stars', 100, 300);
+	context.font = '20px helvetica';
+	context.fillText('Click the telescope lens to begin.', 185, 360);
+	
+
+	//image of telescope to click
+	
+      var imageObj = new Image();
+
+      imageObj.onload = function() {
+      	if (pizza = 3.14){
+        context.drawImage(imageObj, 660, 373, 140, 150);
+         }
+         else
+        imageObj.src = 'http://downloads2.esri.com/support/TechArticles/blank.png';
+    console.log(imageObj);
+      };
+
+      imageObj.src = 'http://images.crestock.com/4160000-4169999/4160444-2xs.jpg';
+//animation call
+		document.getElementById('clear').addEventListener('click', startAnim, true);
+		document.getElementById('clear2').addEventListener('click', startAnim, true);
+}	 
+ function moveParticles() {
+		 //partially clear the screen to fade previous circles, and draw a new particle at each new coordinate
+		 // begin custom shape
+      /*function ship(){
+      	context.beginPath();
+      context.moveTo(170, 80);
+      context.bezierCurveTo(340, 180, 370, 180, 370, 150);
+      context.bezierCurveTo(340, 150, 370, 120, 370, 100);
+      context.bezierCurveTo(340, 40, 370, 30, 370, 50);
+ 
+      context.bezierCurveTo(340, 5, 350, 20, 170, 80);
+
+      // complete custom shape
+      context.closePath();
+      context.lineWidth = 3;
+      context.strokeStyle = 'grey';
+      context.stroke();
+      context.fillStyle = "rgba(0, 0, 0, 0.1)"
+  }
+  ship();*/
+ 
+ /* //send planets in motion slower than stars
+  		function movePlanets(){
+  		var pl = planets[i];
+			 context.globalCompositeOperation = "source-atop";
+			 context.beginPath();
+			 context.arc(pl.x, pl.y, pl.radius, 0, degreesToRadians(360), true);
+			 context.fillStyle = pl.color;
+			 context.fill();
+			 pl.x += pl.vx;
+			 pl.y += pl.vy;
+			 if(pl.x < -50) 
+			 pl.x = canvas.width+50;
+			 if(pl.y < -50) 
+			 pl.y = canvas.height+50;
+			 if(pl.x > canvas.width+50) 
+			 pl.x = -50;
+			 if(pl.y > canvas.height+50) 
+			 pl.y = -50;
+			
+  		}*/
+		//movePlanets();
+		//draw Telescope
+      var centerX = canvas.width / 2;
+      var centerY = canvas.height / 2;
+      var radius = 500;
+	  
+      
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+		context.lineWidth = 50;
+      context.strokeStyle = '#003300';
+      context.stroke();
+	  
+	  context.rect(400,0,750,800);
+	  context.lineWidth = 40;
+	  context.strokeStyle = '#003300';
+      context.stroke();
+	  
+	  
+
+		//shooting star
+  		context.globalCompositeOperation = "soft-light";
+		 context.fillStyle = "rgba(0, 0, 0, 0.1)";
+		 context.fillRect(0, 0, canvas.width, canvas.height);
+		 context.globalCompositeOperation = "darken";
+		 for(var i = 0; i < particles.length; i++)
+		 {
+			 var p = particles[i];
+			 context.globalCompositeOperation = "source-atop";
+			 context.beginPath();
+			 context.arc(p.x, p.y, p.radius, 0, degreesToRadians(360), true);
+			 context.fillStyle = p.color;
+			 context.fill();
+			 p.x += p.vx;
+			 p.y += p.vy;
+			 if(p.x < -50) 
+			 p.x = canvas.width+50;
+			 if(p.y < -50) 
+			 p.y = canvas.height+50;
+			 if(p.x > canvas.width+50) 
+			 p.x = -50;
+			 if(p.y > canvas.height+50) 
+			 p.y = -50;
+			return p;}
+		}
+	 
+		function noiseMaker(){
+			makeParticles();
+		}
+ window.onload = function() {
+	 resizeCanvas();
+	 makeParticles();
+	 //makePlanets();
+	 drawTitle();
+	 window.addEventListener('resize', resizeCanvas, false);
+	 function resizeCanvas() {
+		canvas = document.getElementById('canvas');
+		context = canvas.getContext('2d');
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				
+			}
+ }
+</script>
+</head>
+<body>
+	<canvas id="canvas" width="700" height="500"></canvas>
+	<div id="buttons">
+      <input type="button" id="clear" value="">
+    </div>	
+    <div id="buttons1">
+    	<input type="button" id="clear2" value="Faster!">
+    </div>	
+</body>
+</html>
