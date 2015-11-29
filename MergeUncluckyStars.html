@@ -6,10 +6,7 @@
 canvas {
  border: 6px solid black;
 }
-body {
-	margin: 0px;
-	padding: 0px;
-	}
+body 
 	#buttons
 	{position: relative;
 		top: 373px;
@@ -29,13 +26,13 @@ var timer;
 var timerOne;
 var timerTwo;
 //take out UFO into different function so that it only appears once in awhile
-var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
- function Shape(x, y, color) {
+var possibleShapes = ['star', 'planet', 'ufo', 'square', 'circle'];
+ function Shape(x, y, color, ufo) {
 		this.x = x;
 		this.y = y;
 		this.size = Math.random()*20+5;
-		this.dx = Math.random()*4-2;
-		this.dy = Math.random()*4-2;
+		this.dx = Math.random()*5-2;
+		this.dy = Math.random()*5-2;
 		this.color = color;
 		this.shape = possibleShapes[Math.floor(Math.random()*possibleShapes.length)];
 	  }
@@ -47,7 +44,7 @@ var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
 		minimumSize=100
         window.addEventListener('resize', drawTitle, false);
         window.addEventListener('orientationchange', drawTitle, false);
-        resizeCanvas();
+ 
 		canvas.onclick = function(event) {
 			handleClick(event.clientX, event.clientY);
 		};
@@ -92,13 +89,12 @@ var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
 
    function drawUfo(ufo) {
 	 context.beginPath();
-	 context.moveTo(ufo.x+3, ufo.y+23);
-	 context.bezierCurveTo(ufo.x-40, ufo.y+38, ufo.x-37, ufo.y+35, ufo.x-40, ufo.y+70);
-	  context.bezierCurveTo(ufo.x+80, ufo.y+100, ufo.x+170, ufo.y+100, ufo.x+240, ufo.y+70);
-	  context.bezierCurveTo(ufo.x+240, ufo.y+70, ufo.x+250, ufo.y+40, ufo.x+200, ufo.y+30);
-	  context.bezierCurveTo(ufo.x+200, ufo.y, ufo.x+70, ufo.y-70, ufo.x+4, ufo.y+23);
-	  context.bezierCurveTo(ufo.x+4, ufo.y+23, ufo.x+110, ufo.y+70, ufo.x+200, ufo.y+30);
-
+	 context.moveTo(ufo.x+15, ufo.y+13);
+	  context.bezierCurveTo(ufo.x+15, ufo.y+13, ufo.x-27, ufo.y+30, ufo.x-30, ufo.y+50);
+	  context.bezierCurveTo(ufo.x+70, ufo.y+90, ufo.x+160, ufo.y+90, ufo.x+220, ufo.y+50);
+	  context.bezierCurveTo(ufo.x+220, ufo.y+50, ufo.x+210, ufo.y+30, ufo.x+170, ufo.y+20);
+	  context.bezierCurveTo(ufo.x+170, ufo.y-10, ufo.x+60, ufo.y-60, ufo.x+15, ufo.y+13);
+	  context.bezierCurveTo(ufo.x-6, ufo.y+13, ufo.x+100, ufo.y+60, ufo.x+170, ufo.y+20);
 	  // completfille custom shape
 	  context.fill();
 	  context.lineWidth = 5;
@@ -168,12 +164,21 @@ var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
 		} else if (shapes[i].shape == 'planet') {
 			drawPlanet(shapes[i]);
 		} else if (shapes[i].shape == 'ufo') {
-			drawUfo(shapes[i]);
+			for (var j=0; j<shapes.length/3; j++){
+			drawUfo(shapes[j]
+			);
+			break;
+			}
 		}
-		if (shapes[i].x + shapes[i].dx > canvas.width || shapes[i].x + shapes[i].dx < 0)
-			shapes[i].dx = -shapes[i].dx;
-		if (shapes[i].y + shapes[i].dy > canvas.height || shapes[i].y + shapes[i].dy < 0)
-			shapes[i].dy = -shapes[i].dy;
+			
+		if (shapes[i].x + shapes[i].dx > canvas.width)
+			shapes[i].x = shapes[i].x-500;
+		if (shapes[i].x + shapes[i].dx < 0)
+			shapes[i].x = shapes[i]-500;
+		if (shapes[i].y + shapes[i].dy > canvas.height) 
+			shapes[i].y = shapes[i].y-500;
+		if (shapes[i].y + shapes[i].dy < 0)
+			shapes[i].y = shapes[i].y+500;
 			shapes[i].x += shapes[i].dx;
 			shapes[i].y += shapes[i].dy;
 	}
@@ -198,6 +203,6 @@ var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
     <div id="buttons1">
     	<input type="button" id="clear2" value="Faster!">
     </div>	
-<canvas id='canvas' width=500 height=500></canvas>
+<canvas id='canvas' width="50" height="50"></canvas>
 </body>	 
 </html>
