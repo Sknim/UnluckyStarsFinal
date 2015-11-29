@@ -6,9 +6,10 @@
 	  var canvas;
 	  var context;
 	  var shapes = []
+	  var minimumSize = 1000
 	  var timer;
 	  var timerTwo;
-	  var possibleShapes = ['drop','triangle','square','circle','cloud'];
+	  var possibleShapes = ['drop','triangle','square','circle','cloud','planet'];
 	  function Shape(x, y, color) {
 		this.x = x;
 		this.y = y;
@@ -22,6 +23,7 @@
         canvas = document.getElementById('canvas');
         context = canvas.getContext("2d");
  
+		minimumSize=100
         window.addEventListener('resize', resizeCanvas, false);
         window.addEventListener('orientationchange', resizeCanvas, false);
         resizeCanvas();
@@ -50,28 +52,48 @@
 		context.fillStyle = square.color;
 		context.fillRect(square.x, square.y, square.size, square.size);
       }	 
+	  function drawPlanet(planet, minimumSize) {
+		 context.beginPath();
+		if (planet.size < minimumSize)
+		 {planet.size = mimimumSize;}
+		 
+		 context.arc(planet.x, planet.y, planet.size, 0, degreesToRadians(360), true);
+		 context.moveTo(planet.x+13, planet.y-15);
+		 context.bezierCurveTo(planet.x+25, planet.y-5, planet.x-15, planet.y+15, planet.x-25, planet.y+9);
+		 context.stroke();
+		 context.closePath();
+	  }
 	  function drawTriangle(triangle) {
 		context.beginPath();
 		context.fillStyle = triangle.color;
 		context.moveTo(triangle.x+triangle.size,triangle.y);
-		context.lineTo(triangle.x,triangle.y);
-		context.lineTo(triangle.x,triangle.y+triangle.size);
+		context.lineTo(triangle.x,triangle.y+8);
+		context.lineTo(triangle.x+(triangle.size*1.5), triangle.y-(triangle.size*1.5));
+		context.moveTo(triangle.x+triangle.size,triangle.y);
+		context.lineTo(triangle.x+(triangle.size *1.3), triangle.y+triangle.size);
+		context.lineTo(triangle.x+(triangle.size),triangle.y);
+		context.lineTo(triangle.x+(triangle.size*2),triangle.y);
+		context.lineTo(triangle.x,triangle.y-15);
+		context.lineTo(triangle.x+(triangle.size *1.3), triangle.y+triangle.size);
+		
+		context.lineJoin = 'round';
+		context.strokeStyle = triangle.color;
+		context.stroke();
 	    context.closePath();
         context.fill();
 	  }
 
 	  function drawCloud(cloud) {
 		 context.beginPath();
-		 context.moveTo(cloud.x, cloud.y);
-		 context.bezierCurveTo(cloud.x-40, cloud.y+20, cloud.x-40, cloud.y+70, cloud.x+60, cloud.y+70);
-		  context.bezierCurveTo(cloud.x+80, cloud.y+100, cloud.x+170, cloud.y+100, cloud.x+170, cloud.y+70);
-		  context.bezierCurveTo(cloud.x+250, cloud.y+70, cloud.x+250, cloud.y+40, cloud.x+210, cloud.y+20);
-		  context.bezierCurveTo(cloud.x+260, cloud.y-40, cloud.x+200, cloud.y+50, cloud.x+170, cloud.y-30);
-		  context.bezierCurveTo(cloud.x+150, cloud.y-75, cloud.x+80, cloud.y-60, cloud.x+80, cloud.y-30);
-		  context.bezierCurveTo(cloud.x+30, cloud.y-75, cloud.x-20, cloud.y-60, cloud.x, cloud.y);
+		 context.moveTo(cloud.x+3, cloud.y+23);
+		 context.bezierCurveTo(cloud.x-40, cloud.y+38, cloud.x-37, cloud.y+35, cloud.x-40, cloud.y+70);
+		  context.bezierCurveTo(cloud.x+80, cloud.y+100, cloud.x+170, cloud.y+100, cloud.x+240, cloud.y+70);
+		  context.bezierCurveTo(cloud.x+240, cloud.y+70, cloud.x+250, cloud.y+40, cloud.x+200, cloud.y+30);
+		  context.bezierCurveTo(cloud.x+200, cloud.y, cloud.x+70, cloud.y-70, cloud.x+4, cloud.y+23);
+		  context.bezierCurveTo(cloud.x+4, cloud.y+23, cloud.x+110, cloud.y+70, cloud.x+200, cloud.y+30);
 
 		  // complete custom shape
-		  context.closePath();
+		   context.fill();
 		  context.lineWidth = 5;
 		  context.strokeStyle = cloud.color;
 		  context.stroke();
@@ -109,6 +131,8 @@
 				drawDrop(shapes[i]);
 			} else if (shapes[i].shape == 'cloud') {
 				drawCloud(shapes[i]);
+			} else if (shapes[i].shape == 'planet') {
+				drawPlanet(shapes[i]);
 			}
 			if (shapes[i].x + shapes[i].dx > canvas.width || shapes[i].x + shapes[i].dx < 0)
 				shapes[i].dx = -shapes[i].dx;

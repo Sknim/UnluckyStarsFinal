@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+<title>Unlucky Stars</title>
+<style>
+canvas {
+ border: 6px solid black;
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	}
+	#buttons
+	{position: relative;
+		top: 373px;
+		left: 670px;
+	}
+	#buttons1
+	{position: relative;
+		top: 500px;
+		left: 700px;
+	}
+</style>
+<script>
+var canvas;
+var context;
+var shapes = [];
+var timer;
+var timerOne;
+var timerTwo;
+//take out UFO into different function so that it only appears once in awhile
+var possibleShapes = ['star', 'planet', 'UFO',/*noise*/, 'square', 'circle'];
+ function Shape(x, y, color) {
+		this.x = x;
+		this.y = y;
+		this.size = Math.random()*20+5;
+		this.dx = Math.random()*4-2;
+		this.dy = Math.random()*4-2;
+		this.color = color;
+		this.shape = possibleShapes[Math.floor(Math.random()*possibleShapes.length)];
+	  }
+	
+	function init() {
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext("2d");
+		
+		minimumSize=100
+        window.addEventListener('resize', drawTitle, false);
+        window.addEventListener('orientationchange', drawTitle, false);
+        resizeCanvas();
+		canvas.onclick = function(event) {
+			handleClick(event.clientX, event.clientY);
+		};
+		timerOne = setInterval(drawTitle, 20);
+      }
+	  
+	  //starts animation after title page
+	var startAnim = function() {
+		clearInterval(timerOne);
+		document.getElementById('clear').style.visibility = 'hidden';
+		timer = setInterval(resizeCanvas, 20);
+		timerTwo = setInterval(newShape, 200);
+	}
+	function newShape() {
+		var x = Math.random() * canvas.width;
+		var y = Math.random() * canvas.height;
+		var colors = ["red", "white", "brown", "orange", "yellow"];
+		var color = colors[Math.floor(Math.random()*colors.length)];
+		shapes.push(new Shape(x, y, color));
+		}
+	 
+	 
+	function drawStar(star) {
+		context.beginPath();
+		context.fillStyle = star.color;
+		context.moveTo(star.x+star.size,star.y);
+		context.lineTo(star.x,star.y+8);
+		context.lineTo(star.x+(star.size*1.5), star.y-(star.size*1.5));
+		context.moveTo(star.x+star.size,star.y);
+		context.lineTo(star.x+(star.size *1.3), star.y+star.size);
+		context.lineTo(star.x+(star.size),star.y);
+		context.lineTo(star.x+(star.size*2),star.y);
+		context.lineTo(star.x,star.y-15);
+		context.lineTo(star.x+(star.size *1.3), star.y+star.size);
+		//complete shape
+		context.lineJoin = 'round';
+		context.strokeStyle = star.color;
+		context.stroke();
+	    context.closePath();
+        context.fill();
+	  }
+
+   function drawUfo(ufo) {
+	 context.beginPath();
+	 context.moveTo(ufo.x+3, ufo.y+23);
+	 context.bezierCurveTo(ufo.x-40, ufo.y+38, ufo.x-37, ufo.y+35, ufo.x-40, ufo.y+70);
+	  context.bezierCurveTo(ufo.x+80, ufo.y+100, ufo.x+170, ufo.y+100, ufo.x+240, ufo.y+70);
+	  context.bezierCurveTo(ufo.x+240, ufo.y+70, ufo.x+250, ufo.y+40, ufo.x+200, ufo.y+30);
+	  context.bezierCurveTo(ufo.x+200, ufo.y, ufo.x+70, ufo.y-70, ufo.x+4, ufo.y+23);
+	  context.bezierCurveTo(ufo.x+4, ufo.y+23, ufo.x+110, ufo.y+70, ufo.x+200, ufo.y+30);
+
+	  // completfille custom shape
+	  context.fill();
+	  context.lineWidth = 5;
+	  context.strokeStyle = ufo.color;
+	  context.stroke();
+  }
+	function drawCircle(circle) {
+		 context.beginPath();
+		 context.arc(circle.x, circle.y, circle.size, 0, degreesToRadians(360), true);
+		 context.fillStyle = circle.color;
+		 context.fill();
+	  }
+	function drawPlanet(planet, minimumSize) {
+		 context.beginPath();
+		if (planet.size < minimumSize)
+		 {planet.size = mimimumSize;}
+		 
+		 context.arc(planet.x, planet.y, planet.size, 0, degreesToRadians(360), true);
+		 context.moveTo(planet.x+13, planet.y-15);
+		 context.bezierCurveTo(planet.x+25, planet.y-5, planet.x-15, planet.y+15, planet.x-25, planet.y+9);
+		 context.stroke();
+		 context.closePath();
+	  }
+	function drawSquare(square) {
+		context.beginPath();
+		context.fillStyle = square.color;
+		context.fillRect(square.x, square.y, square.size, square.size);
+      }	 
+  function drawTitle() {
+	canvas.width = window.innerWidth-20;
+	canvas.height = window.innerHeight-20;
+	//actual title	
+	 context.fillStyle = "rgb(10, 10, 10)";
+	context.font = 'bold 50px helvetica';
+	context.fillText('Unlucky Stars', 100, 300);
+	context.font = '20px helvetica';
+	context.fillText('Click the telescope lens to begin.', 185, 360);
+	
+
+	//image of telescope to click
+	
+      var imageObj = new Image();
+
+      imageObj.onload = function() {
+        imageObj.src = 'http://downloads2.esri.com/support/TechArticles/blank.png';
+    console.log(imageObj);
+      };
+	imageObj.src = 'http://downloads2.esri.com/support/TechArticles/blank.png';;
+	
+	//animation call
+		document.getElementById('clear').addEventListener('click', startAnim, true);
+		document.getElementById('clear2').addEventListener('click', startAnim, true);
+	}
+	
+	
+	function resizeCanvas() {
+	canvas.width = window.innerWidth-20;
+	canvas.height = window.innerHeight-20;
+	fillBackgroundColor();
+	for (var i=0; i<shapes.length; i++) {
+		if (shapes[i].shape == 'square') {
+			drawSquare(shapes[i]);
+		} else if (shapes[i].shape == 'circle') {
+			drawCircle(shapes[i]);
+		} else if (shapes[i].shape == 'star') {
+			drawStar(shapes[i]);
+		} else if (shapes[i].shape == 'planet') {
+			drawPlanet(shapes[i]);
+		} else if (shapes[i].shape == 'ufo') {
+			drawUfo(shapes[i]);
+		}
+		if (shapes[i].x + shapes[i].dx > canvas.width || shapes[i].x + shapes[i].dx < 0)
+			shapes[i].dx = -shapes[i].dx;
+		if (shapes[i].y + shapes[i].dy > canvas.height || shapes[i].y + shapes[i].dy < 0)
+			shapes[i].dy = -shapes[i].dy;
+			shapes[i].x += shapes[i].dx;
+			shapes[i].y += shapes[i].dy;
+	}
+	}
+	function fillBackgroundColor() {
+		 //var colors = ["white", "yellow", "blue", "red"];
+		 //var bgColor = colors[Math.floor(Math.random() * colors.length)];
+		 context.fillStyle = 'black';
+		 context.fillRect(0, 0, canvas.width, canvas.height);
+	}
+	function degreesToRadians(degrees) {
+		//converts from degrees to radians and returns
+		return (degrees * Math.PI)/180;
+	}
+	window.onload = init;
+</script>
+</head>
+<body>
+	<div id="buttons">
+      <input type="button" id="clear" value="">
+    </div>	
+    <div id="buttons1">
+    	<input type="button" id="clear2" value="Faster!">
+    </div>	
+<canvas id='canvas' width=500 height=500></canvas>
+</body>	 
+</html>
