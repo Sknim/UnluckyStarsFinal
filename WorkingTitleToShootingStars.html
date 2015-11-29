@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <title>Particle System</title>
+ <meta charset="utf-8">
+ <style>
+canvas {
+ border: 6px solid black;
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	}
+	#buttons
+	{position: absolute;
+		top: 373px;
+		left: 670px;
+	}
+	#buttons > input {
+		width: 150px;
+		height: 160px;
+
+	}
+</style>
+ <script>
+ var canvas;
+ var context;
+ var particles;
+ var timer;
+ var timer1;
+ var mouse = {x : 0, y : 0};
+ function makeParticles() {
+	//create an array of particles for our animation
+	particles = [];
+	for(var i = 0; i < 5; i++)
+	{
+		particles.push(new Particle());
+		return particles;
+	}
+ }
+ function degreesToRadians(degrees) {
+	 //converts from degrees to radians and returns
+	 return (degrees * Math.PI)/180;
+ }
+
+ function Particle()
+ {
+	 //the constructor for a single particle, with random starting x+y, velocity, color, and radius
+	 this.x = Math.random()*canvas.width;
+	 this.y = Math.random()*canvas.height;
+	 this.vx = Math.random()*10-5;
+	 this.vy = Math.random()*10-5;
+	 var colors = ["orange", "yellow", "white"];
+	 this.color = colors[Math.floor(Math.random()*colors.length)];
+	 this.radius = .5;
+ }
+ var startAnim = function() {
+ clearInterval(timer1);
+ timer = setInterval(moveParticles, .00001);	
+ }
+	//creates title page and starts with button click
+  function drawTitle(canvas, context) {
+	 canvas = document.getElementById('canvas');
+	 context = canvas.getContext('2d');
+	 timer1 = setInterval(drawTitle, 1000000);
+	 context.fillStyle = "rgb(10, 10, 10)";
+	context.font = 'bold 50px helvetica';
+	context.fillText('Unlucky Stars', 100, 300);
+	context.font = '20px helvetica';
+	context.fillText('Place your cursor over the telescope to begin.', 185, 360);
+	//image of telescope to scroll over
+	
+      var imageObj = new Image();
+
+      imageObj.onload = function() {
+        context.drawImage(imageObj, 660, 373, 140, 150);
+      };
+      imageObj.src = 'http://images.crestock.com/4160000-4169999/4160444-2xs.jpg';
+
+		document.getElementById('clear').addEventListener('click', startAnim, true);
+}	 
+ function moveParticles() {
+		 //partially clear the screen to fade previous circles, and draw a new particle at each new coordinate
+		 // begin custom shape
+      context.beginPath();
+      context.moveTo(170, 80);
+      context.bezierCurveTo(340, 180, 400, 180, 340, 150);
+      context.bezierCurveTo(420, 150, 420, 120, 390, 100);
+      context.bezierCurveTo(430, 40, 370, 30, 340, 50);
+ 
+      context.bezierCurveTo(340, 5, 350, 20, 170, 80);
+
+      // complete custom shape
+      context.closePath();
+      context.lineWidth = 3;
+      context.strokeStyle = 'grey';
+      context.stroke();
+      context.fillStyle = "rgba(0, 0, 0, 0.1)"
+
+		 context.globalCompositeOperation = "soft-light";
+		 context.fillStyle = "rgba(0, 0, 0, 0.1)";
+		 context.fillRect(0, 0, canvas.width, canvas.height);
+		 context.globalCompositeOperation = "darken";
+		 for(var i = 0; i < particles.length; i++)
+		 {
+			 var p = particles[i];
+			 context.globalCompositeOperation = "source-atop";
+			 context.beginPath();
+			 context.arc(p.x, p.y, p.radius, 0, degreesToRadians(360), true);
+			 context.fillStyle = p.color;
+			 context.fill();
+			 p.x += p.vx;
+			 p.y += p.vy;
+			 if(p.x < -50) 
+			 p.x = canvas.width+50;
+			 if(p.y < -50) 
+			 p.y = canvas.height+50;
+			 if(p.x > canvas.width+50) 
+			 p.x = -50;
+			 if(p.y > canvas.height+50) 
+			 p.y = -50;
+			return p;
+		 }
+	 }
+
+ window.onload = function() {
+	 resizeCanvas();
+	 makeParticles();
+	 drawTitle();
+	 window.addEventListener('resize', resizeCanvas, false);
+	 function resizeCanvas() {
+		canvas = document.getElementById('canvas');
+		context = canvas.getContext('2d');
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+ }
+</script>
+</head>
+<body>
+	<canvas id="canvas" width="700" height="500"></canvas>
+	<div id="buttons">
+      <input type="button" id="clear" value="Begin">
+    </div>	
+</body>
+</html>
