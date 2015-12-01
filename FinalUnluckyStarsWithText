@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+<head>
+<title>Unlucky Stars</title>
+<style>
+canvas {
+ border: 6px solid black;
+}
+body, canvas {
+	margin: 0px;
+	padding: 0px;
+	}
+	#buttons
+	{position: relative;
+		top: 388px;
+		left: 671px;
+	}
+	#buttons1
+	{position: relative;
+		top: 500px;
+		left: 700px;
+	}
+	#buttons2
+	{position: relative;
+		top: 75px;
+		left: 200px;
+	}
+</style>
+<script>
+var canvas;
+var context;
+var shapes = [];
+var particles;
+ var imageObj = new Image();
+      imageObj.onload = function() {
+	  context.drawImage(imageObj, 660, 323, 160, 170); 
+	 };
+var timer;
+var timerOne;
+var timerTwo;
+var timerThree;
+var timerFour;
+//take out UFO into different function so that it only appears once in awhile
+var possibleShapes = ['star', 'planet', 'ufo', 'square', 'circle', 'text'];
+ function Shape(x, y, color) {
+		this.x = x;
+		this.y = y;
+		this.size = Math.random()*20+5;
+		this.dx = (Math.random()*4-2);
+		this.dy = (Math.random()*4-1);
+		this.color = color;
+		this.shape = possibleShapes[Math.floor(Math.random()*possibleShapes.length)];
+	  }
+	
+	function init() {
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext("2d");
+		makeParticles();
+		minimumSize=100
+		imageObj.src = 'http://images.crestock.com/4160000-4169999/4160444-2xs.jpg';
+		drawTitle();
+		timerOne = setInterval(drawTitle, 10000000);
+		canvas.onclick = function(event) {
+			handleClick(event.clientX, event.clientY);
+		};
+      }
+	  //starts animation after title page for make a wish sequence
+	var startAnim = function(imageObj) {
+		clearInterval(timerOne);
+		makeAWish();
+		document.getElementById('clear').style.visibility = 'hidden';
+		document.getElementById('clear3').style.visibility = 'visible';
+		timerThree = setInterval(makeAWish, .00001);
+	}
+	//starts particle generator
+	var startAnimTwo = function() {
+		timerThree = clearInterval(timerThree);
+		timer = setInterval(resizeCanvas, 20);
+		timerTwo = setInterval(newShape, 200);
+	}
+	function makeParticles() {
+		//create an array of particles for our animation
+		particles = [];
+		for(var i = 0; i < 5; i++)
+		{
+			particles.push(new Particle());
+			return particles;
+		}
+	 }
+	function Particle() {
+		 //the constructor for a single particle, with random starting x+y, velocity, color, and radius
+		 this.x = Math.random()*canvas.width;
+		 this.y = Math.random()*canvas.height;
+		 this.vx = Math.random()*10-5;
+		 this.vy = Math.random()*10-5;
+		 var colors = ["orange", "yellow", "white"];
+		 this.color = colors[Math.floor(Math.random()*colors.length)];
+		 this.radius = 1.5;
+	 }
+		function newShape() {
+			var x = Math.random() * canvas.width;
+			var y = Math.random() * canvas.height;
+			var colors = ["red", "white", "brown", "orange", "yellow"];
+			var color = colors[Math.floor(Math.random()*colors.length)];
+			shapes.push(new Shape(x, y, color));
+			}
+	 
+	function drawStar(star) {
+		context.beginPath();
+		context.fillStyle = star.color;
+		context.moveTo(star.x+star.size,star.y);
+		context.lineTo(star.x,star.y+8);
+		context.lineTo(star.x+(star.size*1.5), star.y-(star.size*1.5));
+		context.moveTo(star.x+star.size,star.y);
+		context.lineTo(star.x+(star.size *1.3), star.y+star.size);
+		context.lineTo(star.x+(star.size),star.y);
+		context.lineTo(star.x+(star.size*2),star.y);
+		context.lineTo(star.x,star.y-15);
+		context.lineTo(star.x+(star.size *1.3), star.y+star.size);
+		//complete shape
+		context.lineJoin = 'round';
+		context.strokeStyle = star.color;
+		context.stroke();
+	    context.closePath();
+        context.fill();
+	  }
+
+   function drawUfo(ufo) {
+	 context.beginPath();
+	 context.moveTo(ufo.x+15, ufo.y+13);
+	  context.bezierCurveTo(ufo.x+15, ufo.y+13, ufo.x-27, ufo.y+30, ufo.x-30, ufo.y+50);
+	  context.bezierCurveTo(ufo.x+70, ufo.y+90, ufo.x+160, ufo.y+90, ufo.x+220, ufo.y+50);
+	  context.bezierCurveTo(ufo.x+220, ufo.y+50, ufo.x+210, ufo.y+30, ufo.x+170, ufo.y+20);
+	  context.bezierCurveTo(ufo.x+170, ufo.y-10, ufo.x+60, ufo.y-60, ufo.x+15, ufo.y+13);
+	  context.bezierCurveTo(ufo.x-6, ufo.y+13, ufo.x+100, ufo.y+60, ufo.x+170, ufo.y+20);
+	  ufo.size/2;
+	  // completfille custom shape
+	  context.fill();
+	  context.lineWidth = 5;
+	  context.strokeStyle = ufo.color;
+	  context.stroke();
+  }
+	function drawCircle(circle) {
+		 context.beginPath();
+		 context.arc(circle.x, circle.y, circle.size, 0, degreesToRadians(360), true);
+		 context.fillStyle = circle.color;
+		 context.fill();
+	  }
+	function drawPlanet(planet, minimumSize) {
+		 context.beginPath();
+		if (planet.size < minimumSize)
+		 {planet.size = mimimumSize;}
+		 
+		 context.arc(planet.x, planet.y, planet.size, 0, degreesToRadians(360), true);
+		 context.moveTo(planet.x+13, planet.y-15);
+		 context.bezierCurveTo(planet.x+25, planet.y-5, planet.x-15, planet.y+15, planet.x-25, planet.y+9);
+		 context.stroke();
+		 context.closePath();
+	  }
+	function drawSquare(square) {
+		context.beginPath();
+		context.fillStyle = square.color;
+		context.fillRect(square.x, square.y, square.size, square.size);
+      }	 
+	 function drawText(text, x, y) {
+	    canvas = document.getElementById('canvas');
+        context = canvas.getContext("2d");
+		context.font = 'bold 50px helvetica';
+		context.fillText('The Universe', 500, 400);
+		
+	  }
+  function drawTitle() {
+	canvas.width = window.innerWidth-20;
+	canvas.height = window.innerHeight-20;
+	//actual title	
+	document.getElementById('clear3').style.visibility = 'hidden';
+	document.getElementById('clear2').style.visibility = 'hidden';
+	 context.fillStyle = "rgb(10, 10, 10)";
+	context.font = 'bold 50px helvetica';
+	context.fillText('Unlucky Stars', 100, 300);
+	context.font = '20px helvetica';
+	context.fillText('Click the telescope lens to begin.', 185, 360);
+	
+		
+
+	//animation call
+		document.getElementById('clear').addEventListener('click', startAnim, true);
+		//document.getElementById('clear2').addEventListener('click', startAnim, true);
+	}
+	
+	function makeAWish() {
+		//shooting star
+		context.fillStyle = "rgb(250, 250, 250)";
+		context.font = '20px helvetica';
+		context.fillText('Look! it\'s a shooting star!', 20, 20);
+  		context.globalCompositeOperation = "soft-light";
+		context.globalCompositeOperation = "source-over";
+		 context.fillStyle = "rgba(0, 0, 0, 0.1)";
+		 context.fillRect(0, 0, canvas.width, canvas.height);
+		 context.globalCompositeOperation = "darken";
+		 document.getElementById('clear3').addEventListener('click', startAnimTwo, true);
+		 document.getElementById('clear2').addEventListener('click', startAnimTwo, true);
+		 
+		 for(var i = 0; i < particles.length; i++)
+		 {
+			 var p = particles[i];
+			 context.globalCompositeOperation = "source-over";
+			 context.beginPath();
+			 context.arc(p.x, p.y, p.radius, 0, degreesToRadians(360), true);
+			 context.fillStyle = p.color;
+			 context.fill();
+			 p.x += p.vx;
+			 p.y += p.vy;
+			 if(p.x < -50) 
+			 p.x = canvas.width+50;
+			 if(p.y < -50) 
+			 p.y = canvas.height+50;
+			 if(p.x > canvas.width+50) 
+			 p.x = -50;
+			 if(p.y > canvas.height+50) 
+			 p.y = -50;
+			return p;
+			}
+		}
+	function resizeCanvas() {
+	canvas.width = window.innerWidth-20;
+	canvas.height = window.innerHeight-20;
+	fillBackgroundColor();
+	document.getElementById('clear3').style.visibility = 'hidden';
+	document.getElementById('clear2').style.visibility = 'visible';
+	
+	for (var i=0; i<shapes.length; i++) {
+		if (shapes[i].shape == 'square') {
+			drawSquare(shapes[i]);
+		} else if (shapes[i].shape == 'circle') {
+			drawCircle(shapes[i]);
+		} else if (shapes[i].shape == 'star') {
+			drawStar(shapes[i]);
+		} else if (shapes[i].shape == 'planet') {
+			drawPlanet(shapes[i]);
+			} else if (shapes[i].shape == 'text') {
+			drawText(shapes[i]);
+		} else if (shapes[i].shape == 'ufo') {
+			for (var j=0; j<shapes.length/3; j++){
+			drawUfo(shapes[j]);
+			break;
+			}
+		  }
+			
+		if (shapes[i].x + shapes[i].dx > canvas.width+50)
+			shapes[i].x = shapes[i].x-(canvas.width+50);
+		if (shapes[i].x + shapes[i].dx < -50)
+			shapes[i].x = shapes[i]+(canvas.width+50);
+		if (shapes[i].y + shapes[i].dy > canvas.height+50) 
+			shapes[i].y = shapes[i].y-(canvas.width+50);
+		if (shapes[i].y + shapes[i].dy < -50)
+			shapes[i].y = shapes[i].y+(canvas.width+1050);
+			shapes[i].x += shapes[i].dx;
+			shapes[i].y += shapes[i].dy;
+	}
+	}
+	function fillBackgroundColor() {
+		 //var colors = ["white", "yellow", "blue", "red"];
+		 //var bgColor = colors[Math.floor(Math.random() * colors.length)];
+		 context.fillStyle = 'black';
+		 context.fillRect(0, 0, canvas.width, canvas.height);
+	}
+	function degreesToRadians(degrees) {
+		//converts from degrees to radians and returns
+		return (degrees * Math.PI)/180;
+	}
+	window.onload = init;
+</script>
+</head>
+<body>
+	<div id="buttons">
+      <input type="button" id="clear" value="">
+    </div>	
+    <div id="buttons1">
+    	<input type="button" id="clear2" value="Faster!">
+    </div>	
+	<div id="buttons2">
+		<input type="button" id="clear3" value="Make a wish">
+	</div>
+<canvas id='canvas' width="50" height="50"></canvas>
+</body>	 
+</html>
